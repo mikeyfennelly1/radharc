@@ -1,3 +1,5 @@
+// contains utilities to read and parse files that exhibit key-value pair behavior
+
 package main
 
 import (
@@ -6,17 +8,13 @@ import (
 	"strings"
 )
 
-const testString string = "key : value"
-
-type ConversionOperation[T any] interface {
-	operation(raw string) T
-}
-
 type genericKVP[T any] struct {
 	key   string
 	value T
 }
 
+// Splits a key-value pair string at a splitter substring, and converts it to another
+// type via the 'convert' function passed as an arg.
 func splitKVP[T any](input string, splitter string, convert func(string) (T, error)) (*genericKVP[T], error) {
 	splitString := strings.Split(input, splitter)
 	if len(splitString) < 2 {
@@ -36,6 +34,7 @@ func splitKVP[T any](input string, splitter string, convert func(string) (T, err
 	return kvp, nil
 }
 
+// attempts to convert a string to an integer
 func stringToInt(S string) (int, error) {
 	return strconv.Atoi(S)
 }
