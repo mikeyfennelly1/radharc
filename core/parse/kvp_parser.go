@@ -1,6 +1,7 @@
 // contains utilities to read and parse files that exhibit key-value pair behavior
+// @author Mikey Fennelly
 
-package main
+package parse
 
 import (
 	"fmt"
@@ -34,7 +35,7 @@ func splitKVP[T any](input string, splitter string, convert func(string) (T, err
 	return kvp, nil
 }
 
-// attempts to convert a string to an integer
+// convert a string to an integer
 func stringToInt(S string) (int, error) {
 	return strconv.Atoi(S)
 }
