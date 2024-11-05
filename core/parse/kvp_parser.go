@@ -10,10 +10,6 @@ import (
 	"strings"
 )
 
-type Converter interface {
-	Convert(string) (any, error)
-}
-
 type convOperation[T any] struct {
 	function func(string) (T, error)
 }
