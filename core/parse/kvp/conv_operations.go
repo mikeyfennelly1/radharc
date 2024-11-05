@@ -6,13 +6,27 @@ import (
 	"strings"
 )
 
+var (
+	STR_TO_STR = ConvOperation[string]{
+		function: strToStr,
+	}
+	STR_TO_INT = ConvOperation[int64]{
+		function: strToInt,
+	}
+	STR_TO_FLOAT64 = ConvOperation[float64]{
+		function: strToFloat64,
+	}
+	STR_TO_STR_SLICE = ConvOperation[[]string]{
+		function: strToStrSlice,
+	}
+	YES_NO_TO_BOOL = ConvOperation[bool]{
+		function: yesNoToBool,
+	}
+)
+
 // return passed string
 func strToStr(s string) (string, error) {
 	return s, nil
-}
-
-var StrToStr = ConvOperation[string]{
-	function: strToStr,
 }
 
 // Parse string to int64
@@ -21,28 +35,16 @@ func strToInt(s string) (int64, error) {
 	return result, err
 }
 
-var StrToInt = ConvOperation[int64]{
-	function: strToInt,
-}
-
 // string to float64
 func strToFloat64(s string) (float64, error) {
 	result, err := strconv.ParseFloat(s, 64)
 	return result, err
 }
 
-var StrToFloat64 = ConvOperation[float64]{
-	function: strToFloat64,
-}
-
 // Convert string to string slice
 func strToStrSlice(s string) ([]string, error) {
 	slice := strings.Split(s, " ")
 	return slice, nil
-}
-
-var StrToStrSlice = ConvOperation[[]string]{
-	function: strToStrSlice,
 }
 
 // Convert yes/no to boolean value
