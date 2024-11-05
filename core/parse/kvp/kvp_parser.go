@@ -10,21 +10,15 @@ import (
 	"strings"
 )
 
-type ConvOperation[T any] struct {
-	function func(string) (T, error)
+// struct for KVPParser - this is the core of the logic that serves as central point
+// for parser logic and data
+type KVPParser[T comparable] struct {
+	ConversionOpMap map[string]func(string) (T, error)
+	ParserRan       bool
+	ResultMap       map[string]interface{}
 }
 
-type KVPParser struct {
-	opMap     map[string]ConvOperation[interface{}]
-	parserRan bool
-	resultMap map[string]interface{}
-}
-
-func (cm *KVPParser) AddConvOperation(key string, convOp ConvOperation[interface{}]) {
-	cm.opMap[key] = convOp
-}
-
-func (parser *KVPParser) Parse(absoluteFilePath string, separator string) {
+func (parser *KVPParser[T]) RunParserOnFile(absoluteFilePath string, keyValueSeparator string) {
 	file, err := os.Open(absoluteFilePath)
 	if err != nil {
 		log.Fatal(err)
@@ -40,21 +34,21 @@ func (parser *KVPParser) Parse(absoluteFilePath string, separator string) {
 			continue
 		}
 
-		separatorIndex := strings.Index(line, separator)
+		separatorIndex := strings.Index(line, keyValueSeparator)
 		if separatorIndex == -1 {
 			continue
 		}
 		key := strings.TrimSpace(line[:separatorIndex])
-		if convOperationValue, found := parser.opMap[key]; found {
+		if convOperationValue, found := parser.ConversionOpMap[key]; found {
 			stringVal := strings.TrimSpace(line[separatorIndex:])
 			value, err := convOperationValue.function(stringVal)
 			if err != nil {
-				parser.resultMap[key] = value
+				parser.ResultMap[key] = value
 			}
 			continue
 		} else {
 			continue
 		}
 	}
-	parser.parserRan = true
+	parser.ParserRan = true
 }
