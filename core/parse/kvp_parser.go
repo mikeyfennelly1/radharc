@@ -5,7 +5,6 @@ package parse
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -27,32 +26,6 @@ func (c convOperation[T]) Convert(s string) (any, error) {
 var conv_int64 = func(s string) (int64, error) {
 	parsedInt, err := strconv.ParseInt(s, 10, 64)
 	return parsedInt, err
-}
-
-type KVP[T any] struct {
-	key   string
-	value T
-}
-
-// Splits a key-value pair string at a splitter substring, and converts it to another
-// type via the 'convert' function passed as an arg.
-func lineParser[T any](input string, splitter string, convert func(string) (T, error)) (*KVP[T], error) {
-	splitString := strings.Split(input, splitter)
-	if len(splitString) < 2 {
-		return nil, fmt.Errorf("input string: '%s' does not contain enough parts", input)
-	}
-
-	value, err := convert(strings.TrimSpace(splitString[1]))
-	if err != nil {
-		return nil, err
-	}
-
-	kvp := &KVP[T]{
-		key:   strings.TrimSpace(splitString[0]),
-		value: value,
-	}
-
-	return kvp, nil
 }
 
 type KVPParser struct {
