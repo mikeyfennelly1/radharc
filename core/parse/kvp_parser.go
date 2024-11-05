@@ -18,10 +18,6 @@ type convOperation[T any] struct {
 	function func(string) (T, error)
 }
 
-func (c convOperation[T]) Convert(s string) (any, error) {
-	return c.function(s)
-}
-
 type KVPParser struct {
 	opMap     map[string]convOperation[interface{}]
 	parserRan bool
