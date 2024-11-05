@@ -7,7 +7,6 @@ import (
 	"bufio"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 )
 
@@ -21,11 +20,6 @@ type convOperation[T any] struct {
 
 func (c convOperation[T]) Convert(s string) (any, error) {
 	return c.function(s)
-}
-
-var conv_int64 = func(s string) (int64, error) {
-	parsedInt, err := strconv.ParseInt(s, 10, 64)
-	return parsedInt, err
 }
 
 type KVPParser struct {
