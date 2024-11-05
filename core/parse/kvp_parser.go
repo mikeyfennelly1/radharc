@@ -10,17 +10,17 @@ import (
 	"strings"
 )
 
-type convOperation[T any] struct {
+type ConvOperation[T any] struct {
 	function func(string) (T, error)
 }
 
 type KVPParser struct {
-	opMap     map[string]convOperation[interface{}]
+	opMap     map[string]ConvOperation[interface{}]
 	parserRan bool
 	resultMap map[string]interface{}
 }
 
-func (cm *KVPParser) AddConvOperation(key string, convOp convOperation[interface{}]) {
+func (cm *KVPParser) AddConvOperation(key string, convOp ConvOperation[interface{}]) {
 	cm.opMap[key] = convOp
 }
 
