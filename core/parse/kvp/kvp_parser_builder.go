@@ -14,3 +14,9 @@ func (parser *KVPParser) AddKeyConvOperationPair(key string, convOp func(s strin
 	}
 	parser.ConversionOpMap[key] = convOp
 }
+
+func (parser *KVPParser) AddKeyConvOperationPairs(keys []string, commonConvOp func(s string) (interface{}, error)) {
+	for _, key := range keys {
+		parser.AddKeyConvOperationPair(key, commonConvOp)
+	}
+}
