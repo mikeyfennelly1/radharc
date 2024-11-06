@@ -12,13 +12,13 @@ import (
 
 // struct for KVPParser - this is the core of the logic that serves as central point
 // for parser logic and data
-type KVPParser[T comparable] struct {
-	ConversionOpMap map[string]func(string) (T, error)
+type KVPParser struct {
+	ConversionOpMap map[string]func(string) (interface{}, error)
 	ParserRan       bool
 	ResultMap       map[string]interface{}
 }
 
-func (parser *KVPParser[T]) RunParserOnFile(absoluteFilePath string, keyValueSeparator string) {
+func (parser *KVPParser) RunParserOnFile(absoluteFilePath string, keyValueSeparator string) {
 	file, err := os.Open(absoluteFilePath)
 	if err != nil {
 		log.Fatal(err)
@@ -41,7 +41,7 @@ func (parser *KVPParser[T]) RunParserOnFile(absoluteFilePath string, keyValueSep
 		key := strings.TrimSpace(line[:separatorIndex])
 		if convOperationValue, found := parser.ConversionOpMap[key]; found {
 			stringVal := strings.TrimSpace(line[separatorIndex:])
-			value, err := convOperationValue.function(stringVal)
+			value, err := convOperationValue(stringVal)
 			if err != nil {
 				parser.ResultMap[key] = value
 			}

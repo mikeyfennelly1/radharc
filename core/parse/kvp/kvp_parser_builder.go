@@ -1,16 +1,16 @@
 package parse
 
-type KeysAndCommonConvOp[T comparable] struct {
+type KeysAndCommonConvOp struct {
 	Keys                      []string
-	CommonConversionOperation func(string) (T, error)
+	CommonConversionOperation func(s string) (interface{}, error)
 }
 
-func (parser *KVPParser[T]) AddKeyConvOperationPair(key string, convOp func(string) (T, error)) {
-	parser.ConversionOpMap[key] = convOp
-}
-
-func (parser *KVPParser[T]) AddKeyConvOperationPairs(keysAndCommonConvOps KeysAndCommonConvOp[T]) {
-	for _, key := range keysAndCommonConvOps.Keys {
-		parser.AddKeyConvOperationPair(key, keysAndCommonConvOps.CommonConversionOperation)
+func (parser *KVPParser) AddKeyConvOperationPair(key string, convOp func(s string) (interface{}, error)) {
+	if parser == nil {
+		panic("KVPParser is nil")
 	}
+	if parser.ConversionOpMap == nil {
+		parser.ConversionOpMap = make(map[string]func(string) (interface{}, error))
+	}
+	parser.ConversionOpMap[key] = convOp
 }
