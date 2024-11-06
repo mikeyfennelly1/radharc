@@ -11,7 +11,7 @@ type cpuInfoValidTypes interface {
 	int64 | string
 }
 
-func GetCPUInfo() parse.KVPParser {
+func GetCPUInfo() map[string]interface{} {
 	cpuinfoParser := parse.KVPParser{}
 	parseToIntKeys := []string{"processor", "cpu family", "model", "stepping", "physical id", "siblings", "core id", "cpu cores", "apicid", "initial apicid", "cpuid level", "clflush size", "cache_alignment"}
 	cpuinfoParser.AddKeyConvOperationPairs(parseToIntKeys, parse.StrToInt)
@@ -24,7 +24,9 @@ func GetCPUInfo() parse.KVPParser {
 	parseStrToStrSliceKeys := []string{"flags", "vmx flags", "bugs"}
 	cpuinfoParser.AddKeyConvOperationPairs(parseStrToStrSliceKeys, parse.StrToStrSlice)
 
-	return cpuinfoParser
+	cpuinfoParser.RunParserOnFile("/proc/cpuinfo", ":")
+
+	return cpuinfoParser.ResultMap
 }
 
 type addressSizes struct {
