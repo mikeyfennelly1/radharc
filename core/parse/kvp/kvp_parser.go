@@ -19,6 +19,10 @@ type KVPParser struct {
 }
 
 func (parser *KVPParser) RunParserOnFile(absoluteFilePath string, keyValueSeparator string) {
+	if parser.ResultMap == nil {
+		parser.ResultMap = make(map[string]interface{})
+	}
+
 	file, err := os.Open(absoluteFilePath)
 	if err != nil {
 		log.Fatal(err)
