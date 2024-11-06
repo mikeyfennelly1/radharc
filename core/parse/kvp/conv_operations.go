@@ -2,6 +2,7 @@ package parse
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 )
@@ -37,5 +38,14 @@ func YesNoToBool(s string) (interface{}, error) {
 		return false, nil
 	} else {
 		return false, errors.New("Input neither 'yes' or 'no'")
+	}
+}
+
+func PopThreeCharsThenParseToInt(s string) (interface{}, error) {
+	if len(s) > 3 {
+		returnStr := s[:len(s)-3]
+		return returnStr, nil
+	} else {
+		return nil, fmt.Errorf("lngth of inputted string '%s' is <= 3", s)
 	}
 }
