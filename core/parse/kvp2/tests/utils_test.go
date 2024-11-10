@@ -2,41 +2,31 @@ package parse
 
 import (
 	parse "github.com/mikeyfennelly1/radharc/core/parse/kvp2"
+	"github.com/stretchr/testify/assert"
 	"testing"
 )
 
-func TestGetStringKeyVal(t *testing.T) {
-	tests := []struct {
-		name            string
-		line            string
-		keyValSeparator string
-		want            *parse.StringKeyVal
-	}{
-		{"Perfect case (key, value and separator exist)",
-			"key : value",
-			":",
-			&parse.StringKeyVal{Key: "key", Val: "value"},
-		},
-		{
-			"No value",
-			"key : ",
-			":",
-			&parse.StringKeyVal{Key: "key", Val: ""},
-		},
-		{
-			"No key",
-			" : value",
-			":",
-			&parse.StringKeyVal{Key: "", Val: "value"},
-		},
-	}
+func Test_NewKeyVal(t *testing.T) {
+	t.Run("Perfect case (key, value and separator exist) - no spaces", func(t *testing.T) {
+		kvp, err := parse.NewKeyVal("a:b", ":")
+		assert.NoError(t, err)
+		assert.NotNil(t, kvp)
+		assert.Equal(t, "a", kvp.Key)
+		assert.Equal(t, "b", kvp.Val)
+	})
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, _ := parse.GetStringKeyVal(tt.line, tt.keyValSeparator)
-			if got.Val != tt.want.Val || got.Key != tt.want.Key {
-				t.Errorf("%s: parse.GetStringKeyVal(\"%s\", \"%s\") => %s; want: %s\n", tt.name, tt.line, tt.keyValSeparator, got, tt.want)
-			}
-		})
-	}
+	t.Run("Perfect case (key, value and separator exist) - has spaces", func(t *testing.T) {
+		kvp, err := parse.NewKeyVal(" a : b ", ":")
+		assert.NoError(t, err)
+		assert.NotNil(t, kvp)
+		assert.Equal(t, "a", kvp.Key)
+		assert.Equal(t, "b", kvp.Val)
+	})
+
+	t.Run("wrong separator", func(t *testing.T) {
+		kvp, err := parse.NewKeyVal(" a : b ", "#")
+		assert.Error(t, err)
+		assert.Equal(t, "KeyValSeparator \"#\" not found in line: \" a : b \"", err.Error())
+		assert.Nil(t, kvp)
+	})
 }
