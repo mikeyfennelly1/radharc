@@ -12,7 +12,23 @@ func TestGetStringKeyVal(t *testing.T) {
 		keyValSeparator string
 		want            *parse.StringKeyVal
 	}{
-		{"Perfect case (key, value and separator exist)", "key : value", ":", &parse.StringKeyVal{Key: "key", Val: "value"}},
+		{"Perfect case (key, value and separator exist)",
+			"key : value",
+			":",
+			&parse.StringKeyVal{Key: "key", Val: "value"},
+		},
+		{
+			"No value",
+			"key : ",
+			":",
+			&parse.StringKeyVal{Key: "key", Val: ""},
+		},
+		{
+			"No key",
+			" : value",
+			":",
+			&parse.StringKeyVal{Key: "", Val: "value"},
+		},
 	}
 
 	for _, tt := range tests {
