@@ -1,7 +1,7 @@
 package parse
 
 import (
-	parse "github.com/mikeyfennelly1/radharc/core/parse/kvp2"
+	parse "github.com/mikeyfennelly1/radharc/core/parse/kvp"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
