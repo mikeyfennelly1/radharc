@@ -24,5 +24,4 @@ func GetAllRunningPids() []int64 {
 	}
 
 	return runningPids
-
 }
