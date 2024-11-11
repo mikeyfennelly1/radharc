@@ -1,7 +1,10 @@
 package vfiles
 
 import (
+	"bufio"
+	"fmt"
 	parse "github.com/mikeyfennelly1/radharc/core/parse/kvp"
+	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -11,22 +14,48 @@ type cpuInfoValidTypes interface {
 	int64 | string
 }
 
-func GetCPUInfo() map[string]interface{} {
-	cpuinfoParser := parse.KVPParser{}
-	parseToIntKeys := []string{"processor", "cpu family", "model", "stepping", "physical id", "siblings", "core id", "cpu cores", "apicid", "initial apicid", "cpuid level", "clflush size", "cache_alignment"}
-	cpuinfoParser.AddKeyConvOperationPairs(parseToIntKeys, parse.StrToInt)
-	parseToStrKeys := []string{"vendor_id", "model name", "microcode"}
-	cpuinfoParser.AddKeyConvOperationPairs(parseToStrKeys, parse.StrToStr)
-	popThreeValsReturnIntKeys := []string{"cache size"}
-	cpuinfoParser.AddKeyConvOperationPairs(popThreeValsReturnIntKeys, parse.PopThreeCharsThenParseToInt)
-	parseAddressSizesKeys := []string{"address sizes"}
-	cpuinfoParser.AddKeyConvOperationPairs(parseAddressSizesKeys, parseAddressSizes)
-	parseStrToStrSliceKeys := []string{"flags", "vmx flags", "bugs"}
-	cpuinfoParser.AddKeyConvOperationPairs(parseStrToStrSliceKeys, parse.StrToStrSlice)
+func GetCPUInfo() []map[string]interface{} {
+	parser := parse.Parser{ConvOpMap: make(map[string]parse.ConversionOperation)}
 
-	cpuinfoParser.RunParserOnFile("/proc/cpuinfo", ":")
+	strToStrKeys := []string{"vendor_id", "model name", "microcode"}
+	parser.AddConvOps(strToStrKeys, parse.ConversionOperation{parse.StrToStr})
 
-	return cpuinfoParser.ResultMap
+	strToStrListKeys := []string{"flags", "vmx flags", "bugs"}
+	parser.AddConvOps(strToStrListKeys, parse.ConversionOperation{parse.StrToStrSlice})
+
+	strToIntKeys := []string{"processor", "cpu family", "model", "stepping", "physical id", "siblings", "core id", "cpu cores", "apicid", "initial apicid", "cpuid level", "clflush size", "cache_alignment"}
+	parser.AddConvOps(strToIntKeys, parse.ConversionOperation{parse.StrToInt})
+
+	strToFloatKeys := []string{"cpu MHz", "bogomips"}
+	parser.AddConvOps(strToFloatKeys, parse.ConversionOperation{parse.StrToFloat64})
+
+	addressSizesKeys := []string{"address sizes"}
+	parser.AddConvOps(addressSizesKeys, parse.ConversionOperation{parseAddressSizes})
+
+	file, err := os.Open("/proc/cpuinfo")
+	if err != nil {
+		fmt.Errorf("Error opening the file /proc/cpuinfo")
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	cpuInfoSections := make([]map[string]interface{}, 0)
+	thisSectionKvps := make(map[string]interface{})
+	for scanner.Scan() {
+		line := scanner.Text()
+
+		if strings.TrimSpace(line) == "" {
+			cpuInfoSections = append(cpuInfoSections, thisSectionKvps)
+		}
+
+		thisLineKVP, err := parser.ParseLine(line, ":")
+		if err != nil {
+			continue
+		}
+		thisSectionKvps[thisLineKVP.Key] = thisLineKVP.Value
+	}
+
+	return cpuInfoSections
 }
 
 type addressSizes struct {
