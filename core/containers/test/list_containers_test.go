@@ -13,6 +13,6 @@ func Test_ListContainers(t *testing.T) {
 
 func Test_ListImages(t *testing.T) {
 	t.Run("test list containers", func(t *testing.T) {
-		containers.ListAllImages()
+		containers.GetImages()
 	})
 }
