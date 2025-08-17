@@ -1,0 +1,40 @@
+= radharc
+:toc:
+
+Radharc is an observability tool that can be used to monitor low-level system information on Linux.
+
+It does not include a web GUI by default, but does expose a gRPC server in userspace. It is encouraged to be used with a web GUI, either on the same host, or on another.
+
+NOTE: 'Radharc' (pronounced _rye-urk_) is an Irish word that translates roughly to english as 'a view' of something. For example the sentence "radharc ar an tráth" would mean, "a view of the beach".
+
+== Standard library modules
+
+=== systemd
+
+The systemd module is used for interacting with the systemd DBUS API in userspace to get information from systemd, without having to continuously go back and forth inspecting through the command line. It contains multiple modules that can be interacted with via either request/response or by streaming mechanisms - although request response is recommended for now to keep system load down.
+
+==== Journal logs
+
+Get systemd journal logs.
+
+==== Active units
+
+List active units in systemd. This can help get a unified picture of what systemd is currently managing on your system. These units include:
+
+- Service units
+- Socket units
+- Target units
+- Mount units
+- Automount units
+- Swap units
+- Device units
+- Path units
+- Timer units
+- Slice units
+- Scope units
+- Busname units
+
+==== Currently running processes managed by systemd
+
+=== Namespaces
+
